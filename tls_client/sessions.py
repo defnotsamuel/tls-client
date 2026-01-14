@@ -70,15 +70,17 @@ class SteamThread(threading.Thread):
 
 class Session:
     def __init__(self,
-                 client_identifier: ClientIdentifiers = "chrome_124",
+                 client_identifier: Optional[ClientIdentifiers] = None,
                  ja3_string: Optional[str] = None,
+                 alpn_protocols: Optional[List[str]] = None,
+                 alps_protocols: Optional[List[str]] = None,
                  h2_settings: Optional[Dict[str, int]] = None,
                  h2_settings_order: Optional[List[str]] = None,
                  supported_signature_algorithms: Optional[List[str]] = None,
                  supported_delegated_credentials_algorithms: Optional[List[str]] = None,
                  supported_versions: Optional[List[str]] = None,
                  key_share_curves: Optional[List[str]] = None,
-                 cert_compression_algo: str = None,
+                 cert_compression_algos: Optional[List[str]] = None,
                  additional_decode: str = None,
                  pseudo_header_order: Optional[List[str]] = None,
                  connection_flow: Optional[int] = None,
@@ -247,6 +249,10 @@ class Session:
         # ]
         self.supported_versions = supported_versions
 
+        self.alpn_protocols = alpn_protocols
+        self.alps_protocols = alps_protocols
+
+
         # Key Share Curves
         # Possible Settings:
         # GREASE
@@ -264,7 +270,7 @@ class Session:
 
         # Cert Compression Algorithm
         # Examples: "zlib", "brotli", "zstd"
-        self.cert_compression_algo = cert_compression_algo
+        self.cert_compression_algos = cert_compression_algos
 
         # Additional Decode
         # Make sure the go code decodes the response body once explicit by provided algorithm.
@@ -523,21 +529,22 @@ class Session:
             request_payload["customTlsClient"] = {
                 "ECHCandidateCipherSuites": None,
                 "ECHCandidatePayloads": None,
-                "alpnProtocols": None,
-                "alpsProtocols": None,
-                "certCompressionAlgo": self.cert_compression_algo,
+                "alpnProtocols": self.alpn_protocols,
+                "alpsProtocols": self.alps_protocols,
+                "certCompressionAlgos": self.cert_compression_algos,
                 "connectionFlow": self.connection_flow,
                 "h2Settings": self.h2_settings,
                 "h2SettingsOrder": self.h2_settings_order,
-                "headerPriority": self.header_priority,
                 "ja3String": self.ja3_string,
                 "keyShareCurves": self.key_share_curves,
                 "priorityFrames": self.priority_frames,
+                "headerPriority": self.header_priority,
                 "pseudoHeaderOrder": self.pseudo_header_order,
                 "supportedDelegatedCredentialsAlgorithms": self.supported_delegated_credentials_algorithms,
                 "supportedSignatureAlgorithms": self.supported_signature_algorithms,
-                "supportedVersions": self.supported_versions,
+                "supportedVersions": self.supported_versions
             }
+
         else:
             request_payload["tlsClientIdentifier"] = self.client_identifier
             request_payload["withRandomTLSExtensionOrder"] = self.random_tls_extension_order
