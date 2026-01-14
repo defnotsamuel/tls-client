@@ -1,16 +1,7 @@
 #!/usr/bin/env python
 import os
-import glob
 
 from setuptools import setup, find_packages
-
-
-data_files = []
-directories = glob.glob('tls_client/dependencies/')
-
-for directory in directories:
-    files = glob.glob(directory+'*')
-    data_files.append(('tls_client/dependencies', files))
 
 about = {}
 here = os.path.abspath(os.path.dirname(__file__))
@@ -23,7 +14,6 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 
 setup(
-    data_files=data_files,
     name=about["__title__"],
     version=about["__version__"],
     author=about["__author__"],
