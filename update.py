@@ -55,3 +55,6 @@ def update_dependencies():
         with open(f"tls_client/dependencies/{dependency_filename}", "wb") as f:
             f.write(response.content)
 
+
+if __name__ == "__main__":
+    update_dependencies()
